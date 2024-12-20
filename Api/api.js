@@ -56,7 +56,7 @@ app.post("/user/sign", async (req, resp) => {
 
 app.post("/user/log", async (req, resp) => {
   if (req.body.email && req.body.password) {
-    let data = await UserData.findOne();
+    let data = await UserData.findOne(req.body);
     jwt.sign({ data }, jwtKey, { expiresIn: "1h" }, (err, token) => {
       if (!err) {
         if (data) {
@@ -77,9 +77,9 @@ app.post("/user/log", async (req, resp) => {
 
 
 
-app.put('/user/:_id' , async (req , resp)=>{
+app.put('/user/:id' , verifyToken , async (req , resp)=>{
     let data = await UserData.updateOne(
-        {__id : req.params._id},
+        {_id : req.params.id},
         {$set:req.body}
     )
     if(data){
@@ -91,8 +91,8 @@ app.put('/user/:_id' , async (req , resp)=>{
     }
 })
 
-app.get("/user/:_id" , async (req , resp)=>{
-  let data = await UserData.findOne({__id:req.params.id})
+app.get("/user/:id" , async (req , resp)=>{
+  let data = await UserData.findOne({_id:req.params.id})
   if(data){
     resp.send(data)
     console.log("Record fetched successfully");
